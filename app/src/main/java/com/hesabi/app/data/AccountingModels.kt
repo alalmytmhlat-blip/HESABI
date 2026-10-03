@@ -9,7 +9,6 @@ import androidx.room.*
 @Entity(tableName="cash_transactions") data class CashTransaction(@PrimaryKey(autoGenerate=true) val id:Long=0,val accountId:Long,val type:String,val dateMillis:Long,val amount:Double,val currencyCode:String="YER",val reference:String="",val contactId:Long?=null,val notes:String="")
 @Entity(tableName="appointments") data class Appointment(@PrimaryKey(autoGenerate=true) val id:Long=0,val contactId:Long,val dueAtMillis:Long,val reason:String,val status:String="PENDING",val notes:String="")
 @Entity(tableName="settings") data class AppSetting(@PrimaryKey val key:String,val value:String)
-
 @Dao interface WarehouseDao{@Query("SELECT * FROM warehouses ORDER BY name") fun all():kotlinx.coroutines.flow.Flow<List<Warehouse>>;@Insert suspend fun insert(x:Warehouse)}
 @Dao interface CurrencyDao{@Query("SELECT * FROM currencies ORDER BY name") fun all():kotlinx.coroutines.flow.Flow<List<Currency>>;@Insert(onConflict=OnConflictStrategy.REPLACE) suspend fun insert(x:Currency)}
 @Dao interface InvoiceDao{@Query("SELECT * FROM invoices ORDER BY dateMillis DESC,id DESC") fun all():kotlinx.coroutines.flow.Flow<List<Invoice>>;@Query("SELECT * FROM invoices WHERE id=:id") suspend fun byId(id:Long):Invoice?;@Insert suspend fun insert(x:Invoice):Long;@Update suspend fun update(x:Invoice)}
