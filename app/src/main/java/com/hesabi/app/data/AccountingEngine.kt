@@ -15,6 +15,6 @@ class AccountingEngine(private val db:AppDatabase){
   require(lines.isNotEmpty()){"القيد فارغ"}
   val debit=lines.filter{it.second>0}.sumOf{it.second};val credit=lines.filter{it.second<0}.sumOf{-it.second}
   require(kotlin.math.abs(debit-credit)<0.000001){"القيد غير متوازن"}
-  db.withTransaction{val id=db.journals().entry(JournalEntry(referenceType,referenceId,System.currentTimeMillis(),memo));db.journals().lines(lines.map{if(it.second>=0)JournalLine(0,id,it.first,debit=it.second)else JournalLine(0,id,it.first,credit=-it.second)})}
+  db.withTransaction{val id=db.journals().entry(JournalEntry(referenceType=referenceType,referenceId=referenceId,dateMillis=System.currentTimeMillis(),memo=memo));db.journals().lines(lines.map{if(it.second>=0)JournalLine(id=0,journalEntryId=id,accountId=it.first,debit=it.second)else JournalLine(id=0,journalEntryId=id,accountId=it.first,credit=-it.second)})}
  }
 }
