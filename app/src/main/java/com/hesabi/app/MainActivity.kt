@@ -30,7 +30,8 @@ fun HesabiApp(){
  val titles=listOf("الرئيسية","المبيعات","المشتريات","العملاء","المزيد")
  val icons=listOf(Icons.Default.Home,Icons.Default.ShoppingCart,Icons.Default.ShoppingCart,Icons.Default.People,Icons.Default.Menu)
  CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl){
-  MaterialTheme{
+  @OptIn(ExperimentalMaterial3Api::class)
+   MaterialTheme{
    Scaffold(
     topBar={TopAppBar(title={Text("حسابي",fontWeight=FontWeight.Bold)},actions={IconButton({}){Icon(Icons.Default.Notifications,null)}})},
     bottomBar={NavigationBar{titles.forEachIndexed{i,t->NavigationBarItem(selected=tab==i,onClick={tab=i},icon={Icon(icons[i],null)},label={Text(t)})}}},
