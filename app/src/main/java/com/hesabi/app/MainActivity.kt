@@ -28,7 +28,7 @@ fun HesabiApp(){
  var tab by remember{mutableIntStateOf(0)}
  LaunchedEffect(Unit){scope.launch{InitialData(db).seed()}}
  val titles=listOf("الرئيسية","المبيعات","المشتريات","العملاء","المزيد")
- val icons=listOf(Icons.Default.Home,Icons.Default.PointOfSale,Icons.Default.ShoppingCart,Icons.Default.People,Icons.Default.Menu)
+ val icons=listOf(Icons.Default.Home,Icons.Default.ShoppingCart,Icons.Default.ShoppingCart,Icons.Default.People,Icons.Default.Menu)
  CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl){
   MaterialTheme{
    Scaffold(
