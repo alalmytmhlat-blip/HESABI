@@ -20,6 +20,6 @@ class BusinessEngine(private val db:AppDatabase){
    id
   }
  }
- suspend fun postReceipt(contactId:Long,cashAccountId:Long,amount:Double,reference:String)=AccountingEngine(db).postCash(contactId,cashAccountId,amount,"RECEIPT",reference)
- suspend fun postPayment(contactId:Long,cashAccountId:Long,amount:Double,reference:String)=AccountingEngine(db).postCash(contactId,cashAccountId,amount,"PAYMENT",reference)
+ suspend fun postReceipt(contactId:Long,cashAccountId:Long,amount:Double,reference:String){ val a=db.accounts().byName("العملاء") ?: error("حساب العملاء غير موجود"); AccountingEngine(db).postCash(a.id,cashAccountId,amount,"RECEIPT",reference) }
+ suspend fun postPayment(contactId:Long,cashAccountId:Long,amount:Double,reference:String){ val a=db.accounts().byName("الموردون") ?: error("حساب الموردين غير موجود"); AccountingEngine(db).postCash(a.id,cashAccountId,amount,"PAYMENT",reference) }
 }
