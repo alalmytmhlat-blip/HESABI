@@ -1,0 +1,20 @@
+package com.hesabi.app.data
+import androidx.room.*
+@Entity(tableName="warehouses") data class Warehouse(@PrimaryKey(autoGenerate=true) val id:Long=0,val name:String,val address:String="")
+@Entity(tableName="currencies") data class Currency(@PrimaryKey val code:String,val name:String,val symbol:String="",val scale:Int=0,val isBase:Boolean=false)
+@Entity(tableName="invoices",indices=[Index("number",unique=true)]) data class Invoice(@PrimaryKey(autoGenerate=true) val id:Long=0,val number:String,val type:String,val dateMillis:Long,val contactId:Long?=null,val warehouseId:Long?=null,val currencyCode:String="YER",val exchangeRate:Double=1.0,val subtotal:Double=0.0,val discount:Double=0.0,val tax:Double=0.0,val total:Double=0.0,val paid:Double=0.0,val status:String="POSTED",val notes:String="")
+@Entity(tableName="invoice_lines") data class InvoiceLine(@PrimaryKey(autoGenerate=true) val id:Long=0,val invoiceId:Long,val productId:Long,val description:String,val quantity:Double,val unitPrice:Double,val discount:Double=0.0,val total:Double=0.0)
+@Entity(tableName="journal_entries") data class JournalEntry(@PrimaryKey(autoGenerate=true) val id:Long=0,val referenceType:String,val referenceId:Long,val dateMillis:Long,val memo:String="")
+@Entity(tableName="journal_lines") data class JournalLine(@PrimaryKey(autoGenerate=true) val id:Long=0,val journalEntryId:Long,val accountId:Long,val debit:Double=0.0,val credit:Double=0.0,val currencyCode:String="YER",val exchangeRate:Double=1.0)
+@Entity(tableName="cash_transactions") data class CashTransaction(@PrimaryKey(autoGenerate=true) val id:Long=0,val accountId:Long,val type:String,val dateMillis:Long,val amount:Double,val currencyCode:String="YER",val reference:String="",val contactId:Long?=null,val notes:String="")
+@Entity(tableName="appointments") data class Appointment(@PrimaryKey(autoGenerate=true) val id:Long=0,val contactId:Long,val dueAtMillis:Long,val reason:String,val status:String="PENDING",val notes:String="")
+@Entity(tableName="settings") data class AppSetting(@PrimaryKey val key:String,val value:String)
+
+@Dao interface WarehouseDao{@Query("SELECT * FROM warehouses ORDER BY name") fun all():kotlinx.coroutines.flow.Flow<List<Warehouse>>;@Insert suspend fun insert(x:Warehouse)}
+@Dao interface CurrencyDao{@Query("SELECT * FROM currencies ORDER BY name") fun all():kotlinx.coroutines.flow.Flow<List<Currency>>;@Insert(onConflict=OnConflictStrategy.REPLACE) suspend fun insert(x:Currency)}
+@Dao interface InvoiceDao{@Query("SELECT * FROM invoices ORDER BY dateMillis DESC,id DESC") fun all():kotlinx.coroutines.flow.Flow<List<Invoice>>;@Query("SELECT * FROM invoices WHERE id=:id") suspend fun byId(id:Long):Invoice?;@Insert suspend fun insert(x:Invoice):Long;@Update suspend fun update(x:Invoice)}
+@Dao interface InvoiceLineDao{@Query("SELECT * FROM invoice_lines WHERE invoiceId=:invoiceId ORDER BY id") suspend fun forInvoice(invoiceId:Long):List<InvoiceLine>;@Insert suspend fun insertAll(x:List<InvoiceLine>);@Query("DELETE FROM invoice_lines WHERE invoiceId=:invoiceId") suspend fun deleteForInvoice(invoiceId:Long)}
+@Dao interface JournalDao{@Insert suspend fun entry(x:JournalEntry):Long;@Insert suspend fun lines(x:List<JournalLine>);@Query("SELECT COALESCE(SUM(debit-credit),0) FROM journal_lines WHERE accountId=:accountId") suspend fun balance(accountId:Long):Double}
+@Dao interface CashDao{@Query("SELECT * FROM cash_transactions ORDER BY dateMillis DESC,id DESC") fun all():kotlinx.coroutines.flow.Flow<List<CashTransaction>>;@Insert suspend fun insert(x:CashTransaction):Long}
+@Dao interface AppointmentDao{@Query("SELECT * FROM appointments WHERE status='PENDING' ORDER BY dueAtMillis") fun pending():kotlinx.coroutines.flow.Flow<List<Appointment>>;@Insert suspend fun insert(x:Appointment):Long;@Update suspend fun update(x:Appointment)}
+@Dao interface SettingDao{@Query("SELECT * FROM settings") suspend fun all():List<AppSetting>;@Query("SELECT value FROM settings WHERE key=:key LIMIT 1") suspend fun get(key:String):String?;@Insert(onConflict=OnConflictStrategy.REPLACE) suspend fun put(x:AppSetting)}
