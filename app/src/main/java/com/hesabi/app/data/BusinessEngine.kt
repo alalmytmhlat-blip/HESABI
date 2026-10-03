@@ -14,7 +14,8 @@ class BusinessEngine(private val db:AppDatabase){
    val contactAccount=db.accounts().byName(if(d.type=="SALE"||d.type=="SALE_RETURN")"العملاء" else "الموردون")
    if(salesAccount!=null && contactAccount!=null){
     val sign=if(d.type=="SALE"||d.type=="PURCHASE")1.0 else -1.0
-    AccountingEngine(db).postJournal(d.type,id,"ترحيل فاتورة "+d.number,listOf(contactAccount.id to total*sign,salesAccount.id to -total*sign))
+    val journalId=db.journals().entry(JournalEntry(d.type,id,System.currentTimeMillis(),"ترحيل فاتورة "+d.number))
+    db.journals().lines(listOf(JournalLine(0,journalId,contactAccount.id,debit=if(sign>0)total else 0.0,credit=if(sign<0)total else 0.0),JournalLine(0,journalId,salesAccount.id,debit=if(sign<0)total else 0.0,credit=if(sign>0)total else 0.0)))
    }
    id
   }
