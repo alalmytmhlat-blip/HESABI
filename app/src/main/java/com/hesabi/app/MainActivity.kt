@@ -67,7 +67,7 @@ fun HesabiApp() {
                     "الدليل" -> AccountsScreen { screen = "الرئيسية" }
                     "العملاء" -> SimpleListScreen("العملاء", listOf("كشف حساب عميل","إضافة عميل","حركة العملاء","أرصدة العملاء")) { screen = "الرئيسية" }
                     "الموردون" -> SimpleListScreen("الموردون", listOf("كشف حساب مورد","إضافة مورد","حركة الموردين","أرصدة الموردين")) { screen = "الرئيسية" }
-                    "المبيعات", "المشتريات", "قبض/صرف" -> TransactionMenuScreen(screen) { screen = "الرئيسية" }
+                    "المبيعات", "المشتريات", "قبض/صرف" -> TransactionMenuScreen(screen, onBack = { screen = "الرئيسية" }, onNavigate = { screen = it })
                     "عمليات مخزنية" -> StockOperationsScreen { screen = "الرئيسية" }
                     "قيود وحسابات" -> AccountingOperationsScreen { screen = "الرئيسية" }
                     "العملات" -> CurrenciesScreen { screen = "الرئيسية" }
@@ -497,7 +497,7 @@ private fun StockMovementScreen(onBack: () -> Unit) {
 }
 
 @Composable
-private fun TransactionMenuScreen(title: String, onBack: () -> Unit) {
+private fun TransactionMenuScreen(title: String, onBack: () -> Unit, onNavigate: (String) -> Unit) {
     val rows = when (title) {
         "المبيعات" -> listOf("فاتورة مبيعات","مرتجع مبيعات","عرض سعر","طلبات العملاء","كشف حساب عميل","حركة المبيعات")
         "المشتريات" -> listOf("فاتورة مشتريات","مرتجع مشتريات","طلبات الشراء","طلبية شراء","كشف حساب مورد","حركة المشتريات")
@@ -509,9 +509,9 @@ private fun TransactionMenuScreen(title: String, onBack: () -> Unit) {
             items(rows) { row ->
                 PlainRow(row, 1f) {
                     when (row) {
-                        "فاتورة مبيعات","مرتجع مبيعات","عرض سعر","فاتورة مشتريات","مرتجع مشتريات","طلبية شراء","قبض","صرف" -> {
-                            // Navigation is handled by the parent route in the main screen.
-                        }
+                        "فاتورة مبيعات","مرتجع مبيعات","عرض سعر","فاتورة مشتريات","مرتجع مشتريات",
+                        "طلبية شراء","قبض","صرف" -> onNavigate(row)
+                        else -> { }
                     }
                 }
             }
