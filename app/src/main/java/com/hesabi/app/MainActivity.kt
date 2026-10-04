@@ -481,7 +481,7 @@ private fun StockMovementScreen(onBack: () -> Unit) {
             }
             LazyColumn(Modifier.weight(1f)) {
                 items(rows) { r ->
-                    Row(Modifier.fillMaxWidth().height((56 * scale).dp).coerceAtLeast(52.dp).let { Modifier.height(it) }, verticalAlignment = Alignment.CenterVertically) {
+                    Row(Modifier.fillMaxWidth().height((56 * scale).dp.coerceAtLeast(52.dp)), verticalAlignment = Alignment.CenterVertically) {
                         Text(r[3].replace("\n", "\n"), Modifier.weight(1f).padding(horizontal = 8.dp), fontSize = (13.5 * scale).sp)
                         Text(r[1], Modifier.width(62.dp), fontSize = (13.5 * scale).sp)
                         Text(r[0], Modifier.width(62.dp), fontSize = (13.5 * scale).sp)
