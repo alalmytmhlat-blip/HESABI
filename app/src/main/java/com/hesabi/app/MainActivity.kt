@@ -65,8 +65,18 @@ fun HesabiApp() {
                     "تقارير أخرى" -> ReportsScreen { screen = "الرئيسية" }
                     "الإعدادات" -> SettingsScreen { screen = "الرئيسية" }
                     "الدليل" -> AccountsScreen { screen = "الرئيسية" }
-                    "المبيعات", "المشتريات", "قبض/صرف" ->
-                        TransactionMenuScreen(screen) { screen = "الرئيسية" }
+                    "العملاء" -> SimpleListScreen("العملاء", listOf("كشف حساب عميل","إضافة عميل","حركة العملاء","أرصدة العملاء")) { screen = "الرئيسية" }
+                    "الموردون" -> SimpleListScreen("الموردون", listOf("كشف حساب مورد","إضافة مورد","حركة الموردين","أرصدة الموردين")) { screen = "الرئيسية" }
+                    "المبيعات", "المشتريات", "قبض/صرف" -> TransactionMenuScreen(screen) { screen = "الرئيسية" }
+                    "عمليات مخزنية" -> StockOperationsScreen { screen = "الرئيسية" }
+                    "قيود وحسابات" -> AccountingOperationsScreen { screen = "الرئيسية" }
+                    "العملات" -> CurrenciesScreen { screen = "الرئيسية" }
+                    "فاتورة مبيعات", "مرتجع مبيعات", "عرض سعر",
+                    "فاتورة مشتريات", "مرتجع مشتريات", "طلبية شراء",
+                    "قبض", "صرف", "قيد يومي", "قيد افتتاحي",
+                    "صرف مخزني", "توريد مخزني", "تحويل مخزني", "تسوية مخزنية",
+                    "إضافة معدن", "جرد مخزني", "إضافة حساب" ->
+                        DocumentFormScreen(screen) { screen = "الرئيسية" }
                     else -> HomeScreen(
                         onMenu = { drawerOpen = true },
                         onNavigate = { screen = it }
@@ -147,88 +157,79 @@ private fun AppTopBar(
 private fun HomeScreen(onMenu: () -> Unit, onNavigate: (String) -> Unit) {
     ResponsiveScale { scale ->
         var openSection by remember { mutableStateOf("عمليات مخزنية") }
-
+        val sections = listOf("عمليات مخزنية","قيود وحسابات","الأصناف","العملات","التقارير")
         Column(Modifier.fillMaxSize().background(Color.White)) {
             AppTopBar("حسابي", onMenu = onMenu)
-
             LazyColumn(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
                 contentPadding = PaddingValues(bottom = 2.dp)
             ) {
                 item {
                     Spacer(Modifier.height((10 * scale).dp.coerceAtLeast(8.dp)))
-                    Row(
-                        Modifier.fillMaxWidth().padding(horizontal = (30 * scale).dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
+                    Row(Modifier.fillMaxWidth().padding(horizontal = (26 * scale).dp), horizontalArrangement = Arrangement.SpaceEvenly) {
                         OperationButton("قبض/صرف", Icons.Default.AccountBalanceWallet, scale) { onNavigate("قبض/صرف") }
                         OperationButton("المبيعات", Icons.Default.ShoppingCart, scale) { onNavigate("المبيعات") }
                     }
                     Spacer(Modifier.height((9 * scale).dp))
-                    Row(
-                        Modifier.fillMaxWidth().padding(horizontal = (30 * scale).dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        OperationButton("الحسابات", Icons.Default.AccountBalance, scale) { onNavigate("الحسابات") }
+                    Row(Modifier.fillMaxWidth().padding(horizontal = (26 * scale).dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+                        OperationButton("الحسابات", Icons.Default.AccountBalance, scale) { onNavigate("الدليل") }
                         OperationButton("المشتريات", Icons.Default.ShoppingBasket, scale) { onNavigate("المشتريات") }
                     }
                     Spacer(Modifier.height((13 * scale).dp))
                 }
-
                 item {
                     SectionBar("عمليات مخزنية", openSection == "عمليات مخزنية", scale) {
                         openSection = if (openSection == "عمليات مخزنية") "" else "عمليات مخزنية"
                     }
                 }
                 if (openSection == "عمليات مخزنية") {
-                    item { PlainRow("صرف مخزني", scale) }
-                    item { PlainRow("توريد مخزني", scale) }
-                    item { PlainRow("تحويل مخزني", scale) }
-                    item { PlainRow("تسوية مخزنية", scale) }
-                    item { PlainRow("إضافة معدن", scale) }
-                    item { PlainRow("جرد مخزني", scale) }
+                    listOf("صرف مخزني","توريد مخزني","تحويل مخزني","تسوية مخزنية","إضافة معدن","جرد مخزني").forEach { name ->
+                        item { PlainRow(name, scale) { onNavigate(name) } }
+                    }
                 }
-
                 item {
                     SectionBar("قيود وحسابات", openSection == "قيود وحسابات", scale) {
                         openSection = if (openSection == "قيود وحسابات") "" else "قيود وحسابات"
                     }
                 }
                 if (openSection == "قيود وحسابات") {
-                    item { PlainRow("قيد يومي", scale) }
-                    item { PlainRow("قيد افتتاحي", scale) }
-                    item { PlainRow("إضافة حساب", scale) }
-                    item { PlainRow("حركة الصندوق", scale) }
-                    item { PlainRow("دليل الحسابات", scale, onClick = { onNavigate("الدليل") }) }
+                    listOf("قيد يومي","قيد افتتاحي","إضافة حساب").forEach { name ->
+                        item { PlainRow(name, scale) { onNavigate(name) } }
+                    }
+                    item { PlainRow("حركة الصندوق", scale) { onNavigate("قبض/صرف") } }
+                    item { PlainRow("دليل الحسابات", scale) { onNavigate("الدليل") } }
+                    item { PlainRow("العملاء", scale) { onNavigate("العملاء") } }
+                    item { PlainRow("الموردون", scale) { onNavigate("الموردون") } }
                 }
-
                 item {
                     SectionBar("الأصناف", openSection == "الأصناف", scale) {
                         openSection = if (openSection == "الأصناف") "" else "الأصناف"
                     }
                 }
                 if (openSection == "الأصناف") {
-                    item { PlainRow("الأصناف", scale, onClick = { onNavigate("الأصناف") }) }
-                    item { PlainRow("أسعار البيع", scale) }
-                    item { PlainRow("وحدات الصنف", scale) }
-                    item { PlainRow("فاتورة عرض بسعر", scale) }
-                    item { PlainRow("طلبية شراء", scale) }
+                    item { PlainRow("الأصناف", scale) { onNavigate("الأصناف") } }
+                    item { PlainRow("حركة الأصناف", scale) { onNavigate("حركة الأصناف") } }
+                    item { PlainRow("أسعار البيع", scale) { onNavigate("الأصناف") } }
+                    item { PlainRow("وحدات الصنف", scale) { onNavigate("الأصناف") } }
+                    item { PlainRow("فاتورة عرض بسعر", scale) { onNavigate("عرض سعر") } }
+                    item { PlainRow("طلبية شراء", scale) { onNavigate("طلبية شراء") } }
                 }
-
                 item {
                     SectionBar("العملات", openSection == "العملات", scale) {
                         openSection = if (openSection == "العملات") "" else "العملات"
                     }
                 }
-
+                if (openSection == "العملات") {
+                    item { PlainRow("العملات وأسعار الصرف", scale) { onNavigate("العملات") } }
+                }
                 item {
                     SectionBar("التقارير", openSection == "التقارير", scale) {
                         openSection = if (openSection == "التقارير") "" else "التقارير"
                     }
                 }
                 if (openSection == "التقارير") {
-                    item { PlainRow("حركة الصندوق", scale) }
-                    item { PlainRow("تقارير أخرى", scale, onClick = { onNavigate("تقارير أخرى") }) }
+                    item { PlainRow("حركة الصندوق", scale) { onNavigate("قبض/صرف") } }
+                    item { PlainRow("تقارير أخرى", scale) { onNavigate("تقارير أخرى") } }
                 }
             }
             BottomWarehouseBar(scale)
@@ -498,18 +499,172 @@ private fun StockMovementScreen(onBack: () -> Unit) {
 @Composable
 private fun TransactionMenuScreen(title: String, onBack: () -> Unit) {
     val rows = when (title) {
-        "المبيعات" -> listOf("فاتورة مبيعات", "مرتجع مبيعات", "عرض سعر", "طلبات العملاء", "كشف حساب عميل")
-        "المشتريات" -> listOf("فاتورة مشتريات", "مرتجع مشتريات", "طلبات الشراء", "كشف حساب مورد")
-        else -> listOf("قبض", "صرف", "تحويل بين الصناديق والبنوك", "حركة الصندوق", "حركة البنك")
+        "المبيعات" -> listOf("فاتورة مبيعات","مرتجع مبيعات","عرض سعر","طلبات العملاء","كشف حساب عميل","حركة المبيعات")
+        "المشتريات" -> listOf("فاتورة مشتريات","مرتجع مشتريات","طلبات الشراء","طلبية شراء","كشف حساب مورد","حركة المشتريات")
+        else -> listOf("قبض","صرف","تحويل بين الصناديق والبنوك","حركة الصندوق","حركة البنك")
     }
     Column(Modifier.fillMaxSize()) {
-        AppTopBar(title, onBack = onBack)
+        AppTopBar(title, onBack = onBack, showSearch = true)
+        LazyColumn(Modifier.weight(1f)) {
+            items(rows) { row ->
+                PlainRow(row, 1f) {
+                    when (row) {
+                        "فاتورة مبيعات","مرتجع مبيعات","عرض سعر","فاتورة مشتريات","مرتجع مشتريات","طلبية شراء","قبض","صرف" -> {
+                            // Navigation is handled by the parent route in the main screen.
+                        }
+                    }
+                }
+            }
+        }
+        BottomWarehouseBar()
+    }
+}
+
+@Composable
+private fun SimpleListScreen(title: String, rows: List<String>, onBack: () -> Unit) {
+    ResponsiveScale { scale ->
+        Column(Modifier.fillMaxSize().background(Color.White)) {
+            AppTopBar(title, onBack = onBack, showSearch = true)
+            LazyColumn(Modifier.weight(1f)) {
+                items(rows) { row ->
+                    PlainRow(row, scale)
+                }
+            }
+            BottomWarehouseBar(scale, showAdd = true)
+        }
+    }
+}
+
+@Composable
+private fun StockOperationsScreen(onBack: () -> Unit) {
+    val rows = listOf("صرف مخزني","توريد مخزني","تحويل مخزني","تسوية مخزنية","إضافة معدن","جرد مخزني","حركة الأصناف","الأصناف الناقصة","الأصناف ذات الرصيد الصفري")
+    Column(Modifier.fillMaxSize()) {
+        AppTopBar("عمليات مخزنية", onBack = onBack, showSearch = true)
+        LazyColumn(Modifier.weight(1f)) {
+            items(rows) { row ->
+                PlainRow(row, 1f)
+            }
+        }
+        BottomWarehouseBar(showAdd = true)
+    }
+}
+
+@Composable
+private fun AccountingOperationsScreen(onBack: () -> Unit) {
+    val rows = listOf("قيد يومي","قيد افتتاحي","إضافة حساب","حركة الصندوق","حركة الحسابات","دليل الحسابات","العملاء","الموردون","سند قبض","سند صرف")
+    Column(Modifier.fillMaxSize()) {
+        AppTopBar("قيود وحسابات", onBack = onBack, showSearch = true)
         LazyColumn(Modifier.weight(1f)) {
             items(rows) { row ->
                 PlainRow(row, 1f)
             }
         }
         BottomWarehouseBar()
+    }
+}
+
+@Composable
+private fun CurrenciesScreen(onBack: () -> Unit) {
+    ResponsiveScale { scale ->
+        val rows = listOf(
+            Triple("ريال يمني","YER","العملة الأساسية"),
+            Triple("ريال سعودي","SAR","سعر الصرف"),
+            Triple("دولار أمريكي","USD","سعر الصرف")
+        )
+        Column(Modifier.fillMaxSize()) {
+            AppTopBar("العملات وأسعار الصرف", onBack = onBack, showSearch = true)
+            Row(Modifier.fillMaxWidth().height((42*scale).dp).background(HesabiBlue), verticalAlignment = Alignment.CenterVertically) {
+                Text("العملة", Modifier.weight(1f).padding(horizontal=12.dp), color=Color.White, fontSize=(14*scale).sp, fontWeight=FontWeight.Bold)
+                Text("الرمز", Modifier.width(70.dp), color=Color.White, fontSize=(14*scale).sp, fontWeight=FontWeight.Bold)
+                Text("الحالة", Modifier.width(110.dp), color=Color.White, fontSize=(14*scale).sp, fontWeight=FontWeight.Bold)
+            }
+            LazyColumn(Modifier.weight(1f)) {
+                items(rows) { r ->
+                    Row(Modifier.fillMaxWidth().height((54*scale).dp), verticalAlignment=Alignment.CenterVertically) {
+                        Text(r.first, Modifier.weight(1f).padding(horizontal=12.dp), fontSize=(14*scale).sp)
+                        Text(r.second, Modifier.width(70.dp), fontSize=(14*scale).sp)
+                        Text(r.third, Modifier.width(110.dp), fontSize=(13*scale).sp)
+                    }
+                    Divider(color=HesabiLine)
+                }
+            }
+            BottomWarehouseBar(scale, showAdd=true)
+        }
+    }
+}
+
+@Composable
+private fun DocumentFormScreen(title: String, onBack: () -> Unit) {
+    var number by remember { mutableStateOf("") }
+    var party by remember { mutableStateOf("") }
+    var item by remember { mutableStateOf("") }
+    var quantity by remember { mutableStateOf("") }
+    var price by remember { mutableStateOf("") }
+    var notes by remember { mutableStateOf("") }
+    val isCash = title == "قبض" || title == "صرف"
+    Column(Modifier.fillMaxSize().background(Color.White)) {
+        AppTopBar(title, onBack = onBack)
+        LazyColumn(
+            Modifier.weight(1f).fillMaxWidth(),
+            contentPadding = PaddingValues(12.dp)
+        ) {
+            item {
+                FormField(if (title.contains("فاتورة") || title.contains("مرتجع") || title=="عرض سعر" || title=="طلبية شراء") "رقم المستند" else "المرجع", number) { number = it }
+                FormField(if (isCash) "الحساب" else if (title.contains("شراء") || title.contains("مرتجع مشتريات")) "المورد" else "العميل", party) { party = it }
+                if (!isCash && title != "قيد يومي" && title != "قيد افتتاحي" && title != "إضافة حساب") {
+                    FormField("الصنف", item) { item = it }
+                    Row(Modifier.fillMaxWidth()) {
+                        Box(Modifier.weight(1f)) { FormField("الكمية", quantity) { quantity = it } }
+                        Spacer(Modifier.width(8.dp))
+                        Box(Modifier.weight(1f)) { FormField("السعر", price) { price = it } }
+                    }
+                }
+                if (title == "قيد يومي" || title == "قيد افتتاحي") {
+                    FormField("البيان", notes) { notes = it }
+                    FormField("الحساب المدين", party) { party = it }
+                    FormField("الحساب الدائن", item) { item = it }
+                    FormField("المبلغ", price) { price = it }
+                } else if (title == "إضافة حساب") {
+                    FormField("اسم الحساب", party) { party = it }
+                    FormField("نوع الحساب", item) { item = it }
+                } else {
+                    FormField("ملاحظات", notes) { notes = it }
+                }
+                Spacer(Modifier.height(8.dp))
+                SummaryLine("الإجمالي", if (price.isBlank()) "0.00" else price)
+                SummaryLine("المدفوع", "0.00")
+                SummaryLine("المتبقي", if (price.isBlank()) "0.00" else price)
+            }
+        }
+        Button(
+            onClick = onBack,
+            modifier = Modifier.fillMaxWidth().padding(12.dp).height(50.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = HesabiBlue)
+        ) {
+            Text("حفظ وترحيل", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+@Composable
+private fun FormField(label: String, value: String, onValueChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label) },
+        modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp),
+        singleLine = true
+    )
+}
+
+@Composable
+private fun SummaryLine(label: String, value: String) {
+    Row(
+        Modifier.fillMaxWidth().padding(vertical = 5.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(label, fontWeight = FontWeight.Bold, color = HesabiText)
+        Text(value, fontWeight = FontWeight.Bold, color = HesabiBlue)
     }
 }
 
