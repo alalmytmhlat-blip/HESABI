@@ -18,7 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.text.FontWeight
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -459,14 +459,14 @@ private fun ProductHeader(scale: Float) {
 private fun StockMovementScreen(onBack: () -> Unit) {
     ResponsiveScale { scale ->
         val rows = listOf(
-            arrayOf("294", "188", "106", "ركب أمريكي سن\نحاس 1/2 هـ"),
-            arrayOf("160", "112", "48", "مسامير خشب\صيني 8×8"),
-            arrayOf("33.575", "13.3", "20.275", "مسامير خشب\صيني 8×1"),
-            arrayOf("72", "34", "38", "ركب أمريكي سن\نحاس 3/4 هـ"),
-            arrayOf("28", "9", "19", "ركب أمريكي سن\نحاس 1/2 * 3/4"),
-            arrayOf("100", "70", "30", "سلك أمريكي\كيس 1/2 هـ"),
-            arrayOf("161", "12", "149", "سلك أمريكي\كيس 3/4 هـ"),
-            arrayOf("2.928", "2.126", "0.802", "مواسير 1.5 * 1.8\هايل بلس")
+            arrayOf("294", "188", "106", "ركب أمريكي سن نحاس 1/2 هـ"),
+            arrayOf("160", "112", "48", "مسامير خشب صيني 8×8"),
+            arrayOf("33.575", "13.3", "20.275", "مسامير خشب صيني 8×1"),
+            arrayOf("72", "34", "38", "ركب أمريكي سن نحاس 3/4 هـ"),
+            arrayOf("28", "9", "19", "ركب أمريكي سن نحاس 1/2 * 3/4"),
+            arrayOf("100", "70", "30", "سلك أمريكي كيس 1/2 هـ"),
+            arrayOf("161", "12", "149", "سلك أمريكي كيس 3/4 هـ"),
+            arrayOf("2.928", "2.126", "0.802", "مواسير 1.5 * 1.8 هايل بلس")
         )
         Column(Modifier.fillMaxSize()) {
             AppTopBar("حركة الأصناف", showSearch = true, onBack = onBack)
